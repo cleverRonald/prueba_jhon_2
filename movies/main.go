@@ -3,7 +3,8 @@ package main
 import (
 	"net/http"
 	"os"
-	
+	"github.com/cleverRonald/prueba_jhon_2/common"
+	"github.com/cleverRonald/prueba_jhon_2/routers"
 )
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
@@ -11,13 +12,15 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "3000"
+	// Calls startup logic
+	common.StartUp()
+	// Get the mux router object
+	router := routers.InitRoutes()
+
+	server := &http.Server{
+		Addr:    common.AppConfig.Server,
+		Handler: router,
 	}
-
-	mux := http.NewServeMux()
-
-	mux.HandleFunc("/", indexHandler)
-	http.ListenAndServe(":"+port, mux)
+	log.Println("Listening...")
+	server.ListenAndServe()
 }
